@@ -1,0 +1,227 @@
+// HSEQ MVP Chile - Database Schema
+// Cumplimiento: Ley16.744, DS44, ISO9001/45001/14001
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USERS & COMPANIES
+// ============================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(AUDITOR)
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  audits    Audit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  rut       String   @unique // RUT empresa chilena
+  industry  String   // Minería, Construcción, etc.
+  users     User[]
+  audits    Audit[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  AUDITOR
+  SUPERVISOR
+  VIEWER
+}
+
+// ============================================
+// AUDITS - Core del sistema
+// ============================================
+
+model Audit {
+  id          String        @id @default(cuid())
+  code        String        @unique // AUD-2024-001
+  companyId   String
+  company     Company       @relation(fields: [companyId], references: [id])
+  auditorId   String
+  auditor     User          @relation(fields: [auditorId], references: [id])
+  type        AuditType
+  norms       AuditNorm[]   // ISO aplicables
+  status      AuditStatus   @default(DRAFT)
+  scheduledAt DateTime
+  completedAt DateTime?
+  findings    Finding[]
+  analysis    Analysis?
+  pdfUrl      String?       // URL Supabase Storage
+  signature   String?       // Firma digital base64
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+enum AuditType {
+  INTERNAL
+  EXTERNAL
+  SURVEILLANCE
+  CERTIFICATION
+}
+
+enum AuditNorm {
+  ISO9001   // Calidad
+  ISO45001  // Seguridad y Salud
+  ISO14001  // Medio Ambiente
+}
+
+enum AuditStatus {
+  DRAFT
+  IN_PROGRESS
+  PENDING_REVIEW
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// FINDINGS - Hallazgos de auditoría
+// ============================================
+
+model Finding {
+  id              String          @id @default(cuid())
+  auditId         String
+  audit           Audit           @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  checklistItemId String
+  checklistItem   ChecklistItem   @relation(fields: [checklistItemId], references: [id])
+  compliant       Boolean
+  comment         String?
+  evidence        String[]        // URLs de evidencia
+  nonConformity   NonConformity?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+// ============================================
+// NON-CONFORMITIES - No Conformidades
+// ============================================
+
+model NonConformity {
+  id             String       @id @default(cuid())
+  code           String       @unique // NC-2024-001
+  findingId      String       @unique
+  finding        Finding      @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  severity       NCSeverity
+  description    String
+  rootCause      String?
+  legalReference String       // "Ley16.744 Art.184" o "DS44 Art.32"
+  capaActions    CAPAAction[]
+  status         NCStatus     @default(OPEN)
+  dueDate        DateTime
+  closedAt       DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+enum NCSeverity {
+  CRITICAL  // Riesgo inminente - Ley16.744 Art.184
+  MAJOR     // Incumplimiento significativo
+  MINOR     // Observación menor
+}
+
+enum NCStatus {
+  OPEN
+  IN_PROGRESS
+  PENDING_VERIFICATION
+  CLOSED
+  OVERDUE
+}
+
+// ============================================
+// CAPA - Acciones Correctivas/Preventivas
+// ============================================
+
+model CAPAAction {
+  id              String        @id @default(cuid())
+  nonConformityId String
+  nonConformity   NonConformity @relation(fields: [nonConformityId], references: [id], onDelete: Cascade)
+  type            CAPAType
+  description     String
+  responsible     String        // Nombre responsable
+  dueDate         DateTime
+  status          CAPAStatus    @default(PENDING)
+  completedAt     DateTime?
+  evidence        String[]      // URLs evidencia cierre
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum CAPAType {
+  CORRECTIVE   // Corregir NC actual
+  PREVENTIVE   // Prevenir recurrencia
+  IMPROVEMENT  // Mejora continua
+}
+
+enum CAPAStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  VERIFIED
+  INEFFECTIVE
+}
+
+// ============================================
+// CHECKLIST - Items de verificación
+// ============================================
+
+model ChecklistItem {
+  id             String    @id @default(cuid())
+  code           String    @unique // ISO45001-6.1.2-001
+  norm           AuditNorm
+  clause         String    // "6.1.2"
+  requirement    String    // Descripción del requisito
+  verificationQ  String    // Pregunta de verificación
+  legalRef       String?   // Referencia legal chilena
+  findings       Finding[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+// ============================================
+// NORM REFERENCES - Normativa Chilena
+// ============================================
+
+model NormReference {
+  id        String   @id @default(cuid())
+  name      String   // "Ley 16.744"
+  article   String   // "Art. 184"
+  title     String   // "Obligaciones del empleador"
+  content   String   // Contenido completo del artículo
+  keywords  String[] // Para búsqueda RAG
+  embedding String?  // Vector embedding ID en Pinecone
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([name, article])
+}
+
+// ============================================
+// AI ANALYSIS - Análisis LLM
+// ============================================
+
+model Analysis {
+  id              String   @id @default(cuid())
+  auditId         String   @unique
+  audit           Audit    @relation(fields: [auditId], references: [id], onDelete: Cascade)
+  summary         String   // Resumen ejecutivo
+  riskLevel       String   // ALTO/MEDIO/BAJO
+  recommendations String[] // Recomendaciones prioritarias
+  legalFindings   Json     // Referencias legales encontradas
+  rawResponse     Json     // Respuesta completa del LLM
+  processedAt     DateTime @default(now())
+}

@@ -1,0 +1,47 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+    content: [
+        './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+        './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+        './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    ],
+    theme: {
+        extend: {
+            colors: {
+                // HSEQ Brand Colors
+                primary: {
+                    50: '#eff6ff',
+                    100: '#dbeafe',
+                    200: '#bfdbfe',
+                    300: '#93c5fd',
+                    400: '#60a5fa',
+                    500: '#3b82f6',
+                    600: '#2563eb',
+                    700: '#1d4ed8',
+                    800: '#1e40af',
+                    900: '#1e3a8a',
+                },
+                // Severity Colors
+                critical: {
+                    DEFAULT: '#dc2626',
+                    light: '#fef2f2',
+                },
+                major: {
+                    DEFAULT: '#f59e0b',
+                    light: '#fffbeb',
+                },
+                minor: {
+                    DEFAULT: '#10b981',
+                    light: '#ecfdf5',
+                },
+                // Compliance Status
+                compliant: '#22c55e',
+                nonCompliant: '#ef4444',
+            },
+            fontFamily: {
+                sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+        },
+    },
+    plugins: [],
+};

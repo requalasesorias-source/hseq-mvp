@@ -1,0 +1,43 @@
+{
+    "project_name": "SaaS HSEQ MVP Chile",
+    "agent_configuration": {
+        "model": "claude-opus-4.5-thinking",
+        "temperature": 0.2,
+        "thinking_budget": "maximum",
+        "max_tokens": 4096
+    },
+    "system_prompt": "You are an expert legal compliance software engineer specializing in Chilean HSEQ regulations (Ley16.744, DS44, DS40, ISO19011, ISO9001, ISO45001, ISO14001). Every code output must validate against specific articles. Output: production-ready code with zero approximations.",
+    "security_settings": {
+        "secure_mode": true,
+        "artifact_review": "agent_decides",
+        "terminal_execution": "request_review",
+        "allow_terminal_commands": [
+            "npm install",
+            "npm run build",
+            "npm start",
+            "git add",
+            "git commit",
+            "git push",
+            "npx prisma migrate",
+            "npx prisma generate"
+        ],
+        "deny_terminal_commands": [
+            "rm -rf /",
+            "sudo",
+            "chmod 777",
+            "export DATABASE_URL",
+            "docker rmi"
+        ]
+    },
+    "file_access": {
+        "gitignore_access": false,
+        "non_workspace_files": false,
+        "auto_open_edited_files": true
+    },
+    "automation": {
+        "auto_fix_lints": true,
+        "auto_continue": true,
+        "enable_web_tools": true
+    },
+    "project_context": "Building HSEQ SaaS for Chilean companies. Audits: ISO9001/45001/14001. Legal compliance: Ley16.744 (labor prevention), DS44 (hygiene), DS40 (sanitary). MVP timeline: 6 days."
+}
