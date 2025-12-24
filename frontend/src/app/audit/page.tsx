@@ -39,7 +39,7 @@ type Finding = {
     comment: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://hseq-mvp.onrender.com';
 
 export default function AuditPage() {
     const [checklist, setChecklist] = useState<ChecklistByNorm | null>(null);
@@ -234,8 +234,8 @@ export default function AuditPage() {
                                     <label
                                         key={norm}
                                         className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer border-2 transition-colors ${selectedNorms.includes(norm)
-                                                ? `${normColors[norm].border} ${normColors[norm].bg}`
-                                                : 'border-gray-200 hover:border-gray-300'
+                                            ? `${normColors[norm].border} ${normColors[norm].bg}`
+                                            : 'border-gray-200 hover:border-gray-300'
                                             }`}
                                     >
                                         <input
@@ -322,10 +322,10 @@ export default function AuditPage() {
                                                 <div
                                                     key={item.id}
                                                     className={`p-4 rounded-lg border-2 transition-colors ${findings[item.id]?.compliant === true
-                                                            ? 'border-green-200 bg-green-50'
-                                                            : findings[item.id]?.compliant === false
-                                                                ? 'border-red-200 bg-red-50'
-                                                                : 'border-gray-200 bg-gray-50'
+                                                        ? 'border-green-200 bg-green-50'
+                                                        : findings[item.id]?.compliant === false
+                                                            ? 'border-red-200 bg-red-50'
+                                                            : 'border-gray-200 bg-gray-50'
                                                         }`}
                                                 >
                                                     <div className="flex items-start justify-between gap-4">
@@ -349,8 +349,8 @@ export default function AuditPage() {
                                                             <button
                                                                 onClick={() => handleFindingChange(item.id, true)}
                                                                 className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === true
-                                                                        ? 'bg-green-500 text-white'
-                                                                        : 'bg-white text-gray-400 hover:text-green-500 border border-gray-200'
+                                                                    ? 'bg-green-500 text-white'
+                                                                    : 'bg-white text-gray-400 hover:text-green-500 border border-gray-200'
                                                                     }`}
                                                                 title="Conforme"
                                                             >
@@ -359,8 +359,8 @@ export default function AuditPage() {
                                                             <button
                                                                 onClick={() => handleFindingChange(item.id, false)}
                                                                 className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === false
-                                                                        ? 'bg-red-500 text-white'
-                                                                        : 'bg-white text-gray-400 hover:text-red-500 border border-gray-200'
+                                                                    ? 'bg-red-500 text-white'
+                                                                    : 'bg-white text-gray-400 hover:text-red-500 border border-gray-200'
                                                                     }`}
                                                                 title="No Conforme"
                                                             >
