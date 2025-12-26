@@ -144,13 +144,13 @@ export default function LoginPage() {
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                             <div className="relative group">
-                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-600 transition-colors" />
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-[#0A0A15] transition-colors" />
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0A0A15]/20 focus:border-[#0A0A15] transition-all font-medium"
                                     placeholder="nombre@empresa.com"
                                 />
                             </div>
@@ -159,16 +159,16 @@ export default function LoginPage() {
                         <div>
                             <div className="flex justify-between items-center mb-1.5">
                                 <label className="block text-sm font-medium text-slate-700">Contraseña</label>
-                                <a href="#" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">¿Olvidaste tu clave?</a>
+                                <a href="#" className="text-xs font-semibold text-blue-700 hover:text-[#0A0A15]">¿Olvidaste tu clave?</a>
                             </div>
                             <div className="relative group">
-                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-600 transition-colors" />
+                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-[#0A0A15] transition-colors" />
                                 <input
                                     type="password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
+                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0A0A15]/20 focus:border-[#0A0A15] transition-all font-medium"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -177,7 +177,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/10 flex items-center justify-center gap-2 mt-6"
+                            className="w-full bg-[#0A0A15] hover:bg-[#151525] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 mt-6"
                         >
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
