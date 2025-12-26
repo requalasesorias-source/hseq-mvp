@@ -108,7 +108,7 @@ export default function LoginPage() {
 
                     {/* Social Login */}
                     <div className="space-y-3">
-                        <button className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-200 shadow-sm">
+                        <button className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm">
                             {/* Google Icon */}
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -118,7 +118,7 @@ export default function LoginPage() {
                             </svg>
                             Google Workspace
                         </button>
-                        <button className="w-full bg-[#1E1E2D] hover:bg-[#27273A] text-white font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors shadow-sm">
+                        <button className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm">
                             {/* Microsoft Icon (Simplified) */}
                             <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
                                 <div className="bg-[#F35325]"></div>
@@ -132,10 +132,10 @@ export default function LoginPage() {
 
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-slate-200"></span>
+                            <span className="w-full border-t border-slate-300"></span>
                         </div>
                         <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-white px-2 text-slate-400">O usa tu email</span>
+                            <span className="bg-white px-2 text-slate-500 font-medium">O usa tu email</span>
                         </div>
                     </div>
 
@@ -144,13 +144,13 @@ export default function LoginPage() {
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
                             <div className="relative group">
-                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-600 transition-colors" />
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
                                     placeholder="nombre@empresa.com"
                                 />
                             </div>
@@ -159,16 +159,16 @@ export default function LoginPage() {
                         <div>
                             <div className="flex justify-between items-center mb-1.5">
                                 <label className="block text-sm font-medium text-slate-700">Contraseña</label>
-                                <a href="#" className="text-xs font-semibold text-blue-600 hover:text-blue-700">¿Olvidaste tu clave?</a>
+                                <a href="#" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">¿Olvidaste tu clave?</a>
                             </div>
                             <div className="relative group">
-                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-600 transition-colors" />
+                                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-emerald-600 transition-colors" />
                                 <input
                                     type="password"
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full bg-white border border-slate-200 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+                                    className="w-full bg-white border border-slate-300 text-slate-900 rounded-xl py-3 pl-11 pr-4 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all font-medium"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -177,7 +177,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-[#4F46E5] hover:bg-[#4338CA] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 mt-4"
+                            className="w-full bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-900/10 flex items-center justify-center gap-2 mt-6"
                         >
                             {isLoading ? (
                                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
