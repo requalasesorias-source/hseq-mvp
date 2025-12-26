@@ -18,6 +18,12 @@ const createAuditSchema = z.object({
     scheduledAt: z.string().datetime(),
 });
 
+// Simplified schema for MVP quick audit creation
+const quickCreateAuditSchema = z.object({
+    norms: z.array(z.enum(['ISO9001', 'ISO45001', 'ISO14001'])).min(1),
+    type: z.enum(['INTERNAL', 'EXTERNAL', 'SURVEILLANCE', 'CERTIFICATION']).optional().default('INTERNAL'),
+});
+
 const updateAuditSchema = z.object({
     status: z.enum(['DRAFT', 'IN_PROGRESS', 'PENDING_REVIEW', 'COMPLETED', 'CANCELLED']).optional(),
     completedAt: z.string().datetime().optional(),
@@ -146,6 +152,80 @@ export async function createAudit(req: Request, res: Response) {
     } catch (error) {
         console.error('[AUDITS] Create error:', error);
         res.status(500).json({ error: 'Failed to create audit' });
+    }
+}
+
+/**
+ * POST /api/audits/quick
+ * Create audit quickly without company/auditor (for MVP demo)
+ */
+export async function quickCreateAudit(req: Request, res: Response) {
+    try {
+        const validation = quickCreateAuditSchema.safeParse(req.body);
+        if (!validation.success) {
+            return res.status(400).json({
+                error: 'Validation failed',
+                details: validation.error.errors
+            });
+        }
+
+        const { norms, type } = validation.data;
+
+        // Generate audit code
+        const year = new Date().getFullYear();
+        const count = await prisma.audit.count({
+            where: {
+                code: { startsWith: `AUD-${year}` },
+            },
+        });
+        const code = `AUD-${year}-${String(count + 1).padStart(3, '0')}`;
+
+        // Get or create demo company and auditor
+        let demoCompany = await prisma.company.findFirst({
+            where: { rut: 'DEMO-MVP-001' }
+        });
+
+        if (!demoCompany) {
+            demoCompany = await prisma.company.create({
+                data: {
+                    name: 'Empresa Demo MVP',
+                    rut: 'DEMO-MVP-001',
+                    industry: 'MINERIA',
+                }
+            });
+        }
+
+        let demoAuditor = await prisma.user.findFirst({
+            where: { email: 'auditor@hseq-mvp.cl' }
+        });
+
+        if (!demoAuditor) {
+            demoAuditor = await prisma.user.create({
+                data: {
+                    email: 'auditor@hseq-mvp.cl',
+                    name: 'Auditor Demo',
+                    role: 'AUDITOR',
+                    companyId: demoCompany.id,
+                }
+            });
+        }
+
+        const audit = await prisma.audit.create({
+            data: {
+                code,
+                companyId: demoCompany.id,
+                auditorId: demoAuditor.id,
+                type: type || 'INTERNAL',
+                norms,
+                scheduledAt: new Date(),
+                status: 'IN_PROGRESS',
+            },
+        });
+
+        res.status(201).json(audit);
+    } catch (error) {
+        console.error('[AUDITS] Quick create error:', error);
+        res.status(500).json({ error: 'Failed to create quick audit' });
     }
 }
 

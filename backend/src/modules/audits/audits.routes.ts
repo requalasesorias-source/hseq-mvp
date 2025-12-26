@@ -7,6 +7,7 @@ import {
     listAudits,
     getAudit,
     createAudit,
+    quickCreateAudit,
     updateAudit,
     deleteAudit,
     completeAudit,
@@ -17,6 +18,7 @@ const router = Router();
 router.get('/', listAudits);
 router.get('/:id', getAudit);
 router.post('/', createAudit);
+router.post('/quick', quickCreateAudit);
 router.patch('/:id', updateAudit);
 router.delete('/:id', deleteAudit);
 router.post('/:id/complete', completeAudit);

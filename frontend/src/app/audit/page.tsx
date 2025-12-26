@@ -159,14 +159,17 @@ export default function AuditPage() {
             let currentAuditId = auditId;
 
             if (!currentAuditId) {
-                // Create new audit
-                const auditResponse = await fetch(`${API_URL}/api/audits`, {
+                // Create new audit using quick endpoint (MVP)
+                const auditResponse = await fetch(`${API_URL}/api/audits/quick`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(auditData),
+                    body: JSON.stringify({ norms: selectedNorms }),
                 });
 
-                if (!auditResponse.ok) throw new Error('Error al crear auditoría');
+                if (!auditResponse.ok) {
+                    const errorData = await auditResponse.json();
+                    throw new Error(errorData.error || 'Error al crear auditoría');
+                }
 
                 const newAudit = await auditResponse.json();
                 currentAuditId = newAudit.id;
@@ -334,11 +337,11 @@ export default function AuditPage() {
                             {/* Risk Level */}
                             {analysisResult.riskLevel && (
                                 <div className={`rounded-lg p-4 ${analysisResult.riskLevel === 'ALTO' ? 'bg-red-50' :
-                                        analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-50' : 'bg-green-50'
+                                    analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-50' : 'bg-green-50'
                                     }`}>
                                     <h3 className="font-semibold mb-2">Nivel de Riesgo</h3>
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${analysisResult.riskLevel === 'ALTO' ? 'bg-red-200 text-red-800' :
-                                            analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'
+                                        analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'
                                         }`}>
                                         {analysisResult.riskLevel}
                                     </span>
