@@ -118,7 +118,8 @@ app.post('/api/admin/seed', async (_req: Request, res: Response) => {
             ["ISO45001-10.2-001", "ISO45001", "10.2", "Acciones correctivas", "¿Se investigan incidentes?", "DS 44 Art. 71"],
         ];
 
-        // Delete all existing items
+        // Delete findings first (foreign key), then checklist items
+        await prisma.$queryRawUnsafe('DELETE FROM "Finding"');
         await prisma.$queryRawUnsafe('DELETE FROM "ChecklistItem"');
 
         // Build and execute a single INSERT with all values
