@@ -156,6 +156,16 @@ export default function DashboardPage() {
                             <p className="text-sm font-medium text-gray-900 truncate">Juan Pérez</p>
                             <p className="text-xs text-gray-500 truncate">Auditor Senior</p>
                         </div>
+                        <button
+                            onClick={() => {
+                                document.cookie = "auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                                window.location.href = '/login';
+                            }}
+                            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Cerrar Sessión"
+                        >
+                            <LogOut className="h-4 w-4" />
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -247,7 +257,7 @@ export default function DashboardPage() {
                                         <YAxis unit="%" domain={[0, 100]} />
                                         <Tooltip
                                             contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                            formatter={(value: number) => [`${value}%`, 'Cumplimiento']}
+                                            formatter={(value: any) => [`${value}%`, 'Cumplimiento']}
                                         />
                                         <Bar dataKey="rate" radius={[4, 4, 0, 0]} maxBarSize={60}>
                                             {charts.complianceByNorm.map((entry: any, index: number) => (
