@@ -96,7 +96,7 @@ export default function LoginPage() {
                                     <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">45</div>
                                     <div>
                                         <h4 className="text-white font-semibold">ISO 45001:2018</h4>
-                                        <p className="text-xs text-gray-400">Seguridad y Salud (Ley 16.744)</p>
+                                        <p className="text-xs text-gray-400">Seguridad (Ley 16.744 / DS44)</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
