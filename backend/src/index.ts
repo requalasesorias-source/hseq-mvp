@@ -66,9 +66,16 @@ app.use('/api/checklist', checklistRoutes);
 // Admin endpoint to seed database (no shell required)
 app.post('/api/admin/seed', async (_req: Request, res: Response) => {
     try {
-        // Dynamic import of Prisma
+        // Dynamic import of Prisma with connection URL config
         const { PrismaClient } = await import('@prisma/client');
-        const prisma = new PrismaClient();
+        const prisma = new PrismaClient({
+            datasources: {
+                db: {
+                    url: process.env.DATABASE_URL,
+                },
+            },
+        });
+        await prisma.$connect();
 
         console.log('🌱 Running database seed...');
 
@@ -180,10 +187,12 @@ app.post('/api/admin/seed', async (_req: Request, res: Response) => {
             { code: 'ISO45001-10.2-001', norm: 'ISO45001', clause: '10.2', requirement: 'Incidentes, no conformidades y acciones correctivas', verificationQ: '¿Se investigan incidentes y se determinan acciones correctivas?', legalRef: 'DS 44 Art. 71' },
         ];
 
-        // Delete all existing and create new (avoid prepared statement conflicts)
-        await prisma.checklistItem.deleteMany({});
-        await prisma.checklistItem.createMany({
-            data: checklistItems as any[],
+        // Use transaction to avoid prepared statement conflicts
+        await prisma.$transaction(async (tx) => {
+            await tx.checklistItem.deleteMany({});
+            for (const item of checklistItems) {
+                await tx.checklistItem.create({ data: item as any });
+            }
         });
 
         await prisma.$disconnect();
