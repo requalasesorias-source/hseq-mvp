@@ -502,6 +502,49 @@ async function main() {
             verificationQ: '¿La organización mejora continuamente la conveniencia, adecuación y eficacia del SGA para mejorar el desempeño ambiental?',
             legalRef: 'Ley 19.300',
         },
+
+        // ============================================
+        // DECRETO SUPREMO 44 - CHILE (vigente 01/02/2025)
+        // Reglamento de Gestión SST
+        // ============================================
+
+        // TÍTULO I - ORGANIZACIÓN PREVENTIVA
+        { code: 'DS44-ART4-001', norm: 'ISO45001', clause: 'DS44-Art.4', requirement: 'Departamento de Prevención de Riesgos', verificationQ: '¿La entidad empleadora con más de 100 trabajadores cuenta con un Departamento de Prevención de Riesgos dirigido por un experto?', legalRef: 'DS 44 Art. 4' },
+        { code: 'DS44-ART5-001', norm: 'ISO45001', clause: 'DS44-Art.5', requirement: 'Funciones del Departamento de Prevención', verificationQ: '¿El Departamento reconoce y evalúa los riesgos, controla la prevención, y asesora a trabajadores y CPHS?', legalRef: 'DS 44 Art. 5' },
+        { code: 'DS44-ART7-001', norm: 'ISO45001', clause: 'DS44-Art.7', requirement: 'Delegado de SST', verificationQ: '¿En centros con menos de 25 trabajadores existe un Delegado de SST elegido por los trabajadores?', legalRef: 'DS 44 Art. 7' },
+        { code: 'DS44-ART8-001', norm: 'ISO45001', clause: 'DS44-Art.8', requirement: 'Funciones del Delegado SST', verificationQ: '¿El Delegado de SST colabora con el empleador y promueve medidas preventivas?', legalRef: 'DS 44 Art. 8' },
+        { code: 'DS44-ART10-001', norm: 'ISO45001', clause: 'DS44-Art.10', requirement: 'Constitución CPHS', verificationQ: '¿Se ha constituido un CPHS en centros con más de 25 trabajadores?', legalRef: 'DS 44 Art. 10, Ley 16.744 Art. 66' },
+        { code: 'DS44-ART11-001', norm: 'ISO45001', clause: 'DS44-Art.11', requirement: 'Funciones del CPHS', verificationQ: '¿El CPHS vigila medidas de prevención e investiga accidentes?', legalRef: 'DS 44 Art. 11' },
+
+        // TÍTULO II - SISTEMA DE GESTIÓN SST
+        { code: 'DS44-ART13-001', norm: 'ISO45001', clause: 'DS44-Art.13', requirement: 'Política de SST documentada', verificationQ: '¿Existe una Política de SST documentada apropiada a los riesgos laborales?', legalRef: 'DS 44 Art. 13' },
+        { code: 'DS44-ART14-001', norm: 'ISO45001', clause: 'DS44-Art.14', requirement: 'Contenido de Política SST', verificationQ: '¿La Política incluye mejora continua, cumplimiento legal y está comunicada?', legalRef: 'DS 44 Art. 14' },
+        { code: 'DS44-ART16-001', norm: 'ISO45001', clause: 'DS44-Art.16', requirement: 'Proceso IPER', verificationQ: '¿Existe un proceso de identificación de peligros y evaluación de riesgos (IPER)?', legalRef: 'DS 44 Art. 16' },
+        { code: 'DS44-ART17-001', norm: 'ISO45001', clause: 'DS44-Art.17', requirement: 'Matriz IPER actualizada', verificationQ: '¿La Matriz IPER está actualizada y considera todos los puestos de trabajo?', legalRef: 'DS 44 Art. 17' },
+        { code: 'DS44-ART18-001', norm: 'ISO45001', clause: 'DS44-Art.18', requirement: 'Participación en IPER', verificationQ: '¿Los trabajadores participan en la identificación de peligros?', legalRef: 'DS 44 Art. 18' },
+        { code: 'DS44-ART19-001', norm: 'ISO45001', clause: 'DS44-Art.19', requirement: 'Jerarquía de controles', verificationQ: '¿Se aplica la jerarquía: eliminación, sustitución, control ingeniería, administrativo, EPP?', legalRef: 'DS 44 Art. 19' },
+        { code: 'DS44-ART20-001', norm: 'ISO45001', clause: 'DS44-Art.20', requirement: 'Programa Anual PRL', verificationQ: '¿Existe un Programa Anual de Prevención con objetivos, plazos y recursos?', legalRef: 'DS 44 Art. 20' },
+        { code: 'DS44-ART23-001', norm: 'ISO45001', clause: 'DS44-Art.23', requirement: 'Estructura SST', verificationQ: '¿Están definidas las responsabilidades y funciones en SST?', legalRef: 'DS 44 Art. 23' },
+        { code: 'DS44-ART27-001', norm: 'ISO45001', clause: 'DS44-Art.27', requirement: 'Indicadores SST', verificationQ: '¿Se monitorean indicadores de SST (frecuencia, gravedad, accidentabilidad)?', legalRef: 'DS 44 Art. 27' },
+        { code: 'DS44-ART28-001', norm: 'ISO45001', clause: 'DS44-Art.28', requirement: 'Auditorías internas SST', verificationQ: '¿Se realizan auditorías internas periódicas del SGSST?', legalRef: 'DS 44 Art. 28' },
+        { code: 'DS44-ART29-001', norm: 'ISO45001', clause: 'DS44-Art.29', requirement: 'Revisión por dirección', verificationQ: '¿La alta dirección revisa periódicamente el SGSST?', legalRef: 'DS 44 Art. 29' },
+
+        // TÍTULO III - GESTIÓN PREVENTIVA
+        { code: 'DS44-ART31-001', norm: 'ISO45001', clause: 'DS44-Art.31', requirement: 'Obligación de Informar (ODI)', verificationQ: '¿Se informa a trabajadores sobre riesgos y medidas preventivas antes de laborar?', legalRef: 'DS 44 Art. 31, DS 40 Art. 21' },
+        { code: 'DS44-ART32-001', norm: 'ISO45001', clause: 'DS44-Art.32', requirement: 'Programa de Capacitación SST', verificationQ: '¿Existe programa de capacitación con inducción y formación continua?', legalRef: 'DS 44 Art. 32' },
+        { code: 'DS44-ART33-001', norm: 'ISO45001', clause: 'DS44-Art.33', requirement: 'Registros de capacitación', verificationQ: '¿Se mantienen registros de capacitación con contenido, fecha y asistencia?', legalRef: 'DS 44 Art. 33' },
+        { code: 'DS44-ART36-001', norm: 'ISO45001', clause: 'DS44-Art.36', requirement: 'Vigilancia de salud', verificationQ: '¿Se realiza vigilancia de salud según protocolo MINSAL?', legalRef: 'DS 44 Art. 36' },
+        { code: 'DS44-ART37-001', norm: 'ISO45001', clause: 'DS44-Art.37', requirement: 'Exámenes ocupacionales', verificationQ: '¿Se realizan exámenes pre-ocupacionales, periódicos y de egreso?', legalRef: 'DS 44 Art. 37' },
+        { code: 'DS44-ART41-001', norm: 'ISO45001', clause: 'DS44-Art.41', requirement: 'Entrega de EPP', verificationQ: '¿Se proporcionan EPP sin costo cuando no se puede eliminar el riesgo?', legalRef: 'DS 44 Art. 41, Ley 16.744 Art. 68' },
+        { code: 'DS44-ART42-001', norm: 'ISO45001', clause: 'DS44-Art.42', requirement: 'Registro de entrega EPP', verificationQ: '¿Existen registros de entrega de EPP con fecha, tipo y firma?', legalRef: 'DS 44 Art. 42' },
+        { code: 'DS44-ART46-001', norm: 'ISO45001', clause: 'DS44-Art.46', requirement: 'Investigación de accidentes', verificationQ: '¿Se investigan todos los accidentes e incidentes?', legalRef: 'DS 44 Art. 46' },
+        { code: 'DS44-ART47-001', norm: 'ISO45001', clause: 'DS44-Art.47', requirement: 'Metodología de investigación', verificationQ: '¿Se usa metodología para identificar causas (árbol de causas, 5 porqués)?', legalRef: 'DS 44 Art. 47' },
+        { code: 'DS44-ART48-001', norm: 'ISO45001', clause: 'DS44-Art.48', requirement: 'CPHS en investigación', verificationQ: '¿El CPHS participa en investigación de accidentes?', legalRef: 'DS 44 Art. 48' },
+        { code: 'DS44-ART51-001', norm: 'ISO45001', clause: 'DS44-Art.51', requirement: 'Plan de Emergencias', verificationQ: '¿Existe Plan de Emergencias para incendio, evacuación, sismos?', legalRef: 'DS 44 Art. 51' },
+        { code: 'DS44-ART52-001', norm: 'ISO45001', clause: 'DS44-Art.52', requirement: 'Brigadas de emergencia', verificationQ: '¿Están designadas y capacitadas las brigadas de emergencia?', legalRef: 'DS 44 Art. 52' },
+        { code: 'DS44-ART53-001', norm: 'ISO45001', clause: 'DS44-Art.53', requirement: 'Simulacros de emergencia', verificationQ: '¿Se realizan simulacros al menos 1 vez al año con registro?', legalRef: 'DS 44 Art. 53' },
+        { code: 'DS44-ART56-001', norm: 'ISO45001', clause: 'DS44-Art.56', requirement: 'Mapa de Riesgos', verificationQ: '¿Existe un Mapa de Riesgos del centro de trabajo?', legalRef: 'DS 44 Art. 56' },
+        { code: 'DS44-ART57-001', norm: 'ISO45001', clause: 'DS44-Art.57', requirement: 'Señalización de seguridad', verificationQ: '¿Existe señalización según NCh 1410 y NCh 1411?', legalRef: 'DS 44 Art. 57, DS 594' },
     ];
 
     // Limpiar items anteriores y crear nuevos
