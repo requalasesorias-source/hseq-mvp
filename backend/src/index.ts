@@ -180,14 +180,11 @@ app.post('/api/admin/seed', async (_req: Request, res: Response) => {
             { code: 'ISO45001-10.2-001', norm: 'ISO45001', clause: '10.2', requirement: 'Incidentes, no conformidades y acciones correctivas', verificationQ: '¿Se investigan incidentes y se determinan acciones correctivas?', legalRef: 'DS 44 Art. 71' },
         ];
 
-        // Upsert checklist items
-        for (const item of checklistItems) {
-            await prisma.checklistItem.upsert({
-                where: { code: item.code },
-                update: item as any,
-                create: item as any,
-            });
-        }
+        // Delete all existing and create new (avoid prepared statement conflicts)
+        await prisma.checklistItem.deleteMany({});
+        await prisma.checklistItem.createMany({
+            data: checklistItems as any[],
+        });
 
         await prisma.$disconnect();
 
