@@ -14,6 +14,8 @@ import {
     ChevronDown,
     ChevronRight,
     Loader2,
+    Search,
+    X,
 } from 'lucide-react';
 
 // Types
@@ -60,6 +62,7 @@ export default function AuditPage() {
     const [saveMessage, setSaveMessage] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<any>(null);
     const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Fetch checklist from API
     useEffect(() => {
@@ -142,6 +145,21 @@ export default function AuditPage() {
         ISO45001: 'Seguridad y Salud',
         ISO14001: 'Medio Ambiente',
     };
+
+    // Filter items based on search query
+    const filterItems = (items: ChecklistItem[]) => {
+        if (!searchQuery.trim()) return items;
+
+        const query = searchQuery.toLowerCase();
+        return items.filter(item =>
+            item.code.toLowerCase().includes(query) ||
+            item.requirement.toLowerCase().includes(query) ||
+            item.verificationQ.toLowerCase().includes(query) ||
+            item.clause.toLowerCase().includes(query) ||
+            (item.legalRef && item.legalRef.toLowerCase().includes(query))
+        );
+    };
+
 
     // Save draft function
     const handleSaveDraft = async () => {
@@ -531,9 +549,44 @@ export default function AuditPage() {
 
                     {/* Checklist */}
                     <div className="lg:col-span-3 space-y-6">
+                        {/* Search Bar */}
+                        <div className="card">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Buscar por código, requisito, pregunta o referencia legal..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                                        title="Limpiar búsqueda"
+                                    >
+                                        <X className="h-4 w-4 text-gray-400" />
+                                    </button>
+                                )}
+                            </div>
+                            {searchQuery && (
+                                <p className="mt-2 text-sm text-gray-600">
+                                    {selectedNorms.reduce((total, norm) => {
+                                        const items = checklist?.[norm as keyof ChecklistByNorm] || [];
+                                        return total + filterItems(items).length;
+                                    }, 0)} resultados encontrados
+                                </p>
+                            )}
+                        </div>
+
                         {selectedNorms.map((norm) => {
                             const items = checklist?.[norm as keyof ChecklistByNorm] || [];
+                            const filteredItems = filterItems(items);
                             const colors = normColors[norm as keyof typeof normColors];
+
+                            // Si hay una búsqueda activa y no hay resultados para esta norma, no mostrarla si se desea (opcional), 
+                            // pero para mantener consistencia visual mostraremos la norma con 0 resultados si es que está seleccionada.
 
                             return (
                                 <div key={norm} className="card">
@@ -548,7 +601,7 @@ export default function AuditPage() {
                                             <div className="text-left">
                                                 <h3 className="font-semibold text-gray-900">{norm}</h3>
                                                 <p className="text-sm text-gray-500">
-                                                    {items.length} items • {normLabels[norm as keyof typeof normLabels]}
+                                                    {searchQuery ? `${filteredItems.length} de ${items.length}` : `${items.length}`} items • {normLabels[norm as keyof typeof normLabels]}
                                                 </p>
                                             </div>
                                         </div>
@@ -561,74 +614,82 @@ export default function AuditPage() {
 
                                     {expandedNorms[norm] && (
                                         <div className="mt-6 space-y-4">
-                                            {items.map((item) => (
-                                                <div
-                                                    key={item.id}
-                                                    className={`p-4 rounded-lg border-2 transition-colors ${findings[item.id]?.compliant === true
-                                                        ? 'border-green-200 bg-green-50'
-                                                        : findings[item.id]?.compliant === false
-                                                            ? 'border-red-200 bg-red-50'
-                                                            : 'border-gray-200 bg-gray-50'
-                                                        }`}
-                                                >
-                                                    <div className="flex items-start justify-between gap-4">
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                                                <span className="text-xs font-medium text-gray-500 bg-white px-2 py-0.5 rounded border">
-                                                                    {item.clause}
-                                                                </span>
-                                                                {item.legalRef && (
-                                                                    <span className="text-xs text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
-                                                                        {item.legalRef}
-                                                                    </span>
-                                                                )}
-                                                                <span className="text-xs text-gray-400">{item.code}</span>
-                                                            </div>
-                                                            <h4 className="font-medium text-gray-900 mb-1">{item.requirement}</h4>
-                                                            <p className="text-sm text-gray-600">{item.verificationQ}</p>
-                                                        </div>
-
-                                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                                            <button
-                                                                onClick={() => handleFindingChange(item.id, true)}
-                                                                className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === true
-                                                                    ? 'bg-green-500 text-white'
-                                                                    : 'bg-white text-gray-400 hover:text-green-500 border border-gray-200'
-                                                                    }`}
-                                                                title="Conforme"
-                                                            >
-                                                                <CheckCircle2 className="h-5 w-5" />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => handleFindingChange(item.id, false)}
-                                                                className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === false
-                                                                    ? 'bg-red-500 text-white'
-                                                                    : 'bg-white text-gray-400 hover:text-red-500 border border-gray-200'
-                                                                    }`}
-                                                                title="No Conforme"
-                                                            >
-                                                                <XCircle className="h-5 w-5" />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    {findings[item.id]?.compliant === false && (
-                                                        <div className="mt-4">
-                                                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                                <AlertTriangle className="h-4 w-4 inline mr-1 text-amber-500" />
-                                                                Describe el hallazgo
-                                                            </label>
-                                                            <textarea
-                                                                value={findings[item.id]?.comment || ''}
-                                                                onChange={(e) => handleCommentChange(item.id, e.target.value)}
-                                                                placeholder="Describe la no conformidad observada..."
-                                                                className="input resize-none w-full"
-                                                                rows={2}
-                                                            />
-                                                        </div>
-                                                    )}
+                                            {filteredItems.length === 0 && searchQuery ? (
+                                                <div className="text-center py-8 text-gray-500">
+                                                    <Search className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+                                                    <p>No se encontraron resultados para "{searchQuery}"</p>
                                                 </div>
-                                            ))}
+                                            ) : (
+                                                filteredItems.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        className={`p-4 rounded-lg border-2 transition-colors ${findings[item.id]?.compliant === true
+                                                            ? 'border-green-200 bg-green-50'
+                                                            : findings[item.id]?.compliant === false
+                                                                ? 'border-red-200 bg-red-50'
+                                                                : 'border-gray-200 bg-gray-50'
+                                                            }`}
+                                                    >
+                                                        <div className="flex items-start justify-between gap-4">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                                    <span className="text-xs font-medium text-gray-500 bg-white px-2 py-0.5 rounded border">
+                                                                        {item.clause}
+                                                                    </span>
+                                                                    {item.legalRef && (
+                                                                        <span className="text-xs text-primary-600 bg-primary-50 px-2 py-0.5 rounded">
+                                                                            {item.legalRef}
+
+                                                                        </span>
+                                                                    )}
+                                                                    <span className="text-xs text-gray-400">{item.code}</span>
+                                                                </div>
+                                                                <h4 className="font-medium text-gray-900 mb-1">{item.requirement}</h4>
+                                                                <p className="text-sm text-gray-600">{item.verificationQ}</p>
+                                                            </div>
+
+                                                            <div className="flex items-center gap-2 flex-shrink-0">
+                                                                <button
+                                                                    onClick={() => handleFindingChange(item.id, true)}
+                                                                    className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === true
+                                                                        ? 'bg-green-500 text-white'
+                                                                        : 'bg-white text-gray-400 hover:text-green-500 border border-gray-200'
+                                                                        }`}
+                                                                    title="Conforme"
+                                                                >
+                                                                    <CheckCircle2 className="h-5 w-5" />
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleFindingChange(item.id, false)}
+                                                                    className={`p-2 rounded-lg transition-colors ${findings[item.id]?.compliant === false
+                                                                        ? 'bg-red-500 text-white'
+                                                                        : 'bg-white text-gray-400 hover:text-red-500 border border-gray-200'
+                                                                        }`}
+                                                                    title="No Conforme"
+                                                                >
+                                                                    <XCircle className="h-5 w-5" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {findings[item.id]?.compliant === false && (
+                                                            <div className="mt-4">
+                                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                                    <AlertTriangle className="h-4 w-4 inline mr-1 text-amber-500" />
+                                                                    Describe el hallazgo
+                                                                </label>
+                                                                <textarea
+                                                                    value={findings[item.id]?.comment || ''}
+                                                                    onChange={(e) => handleCommentChange(item.id, e.target.value)}
+                                                                    placeholder="Describe la no conformidad observada..."
+                                                                    className="input resize-none w-full"
+                                                                    rows={2}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
                                         </div>
                                     )}
                                 </div>
