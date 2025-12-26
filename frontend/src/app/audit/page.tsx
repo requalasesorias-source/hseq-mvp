@@ -53,6 +53,14 @@ export default function AuditPage() {
         ISO9001: false,
     });
 
+    // New states for save and analysis
+    const [saving, setSaving] = useState(false);
+    const [analyzing, setAnalyzing] = useState(false);
+    const [auditId, setAuditId] = useState<string | null>(null);
+    const [saveMessage, setSaveMessage] = useState<string | null>(null);
+    const [analysisResult, setAnalysisResult] = useState<any>(null);
+    const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+
     // Fetch checklist from API
     useEffect(() => {
         async function fetchChecklist() {
@@ -135,6 +143,134 @@ export default function AuditPage() {
         ISO14001: 'Medio Ambiente',
     };
 
+    // Save draft function
+    const handleSaveDraft = async () => {
+        try {
+            setSaving(true);
+            setSaveMessage(null);
+
+            // Create or update audit
+            const auditData = {
+                companyId: 'demo-company-id', // In real app, get from user context
+                norms: selectedNorms,
+                status: 'IN_PROGRESS',
+            };
+
+            let currentAuditId = auditId;
+
+            if (!currentAuditId) {
+                // Create new audit
+                const auditResponse = await fetch(`${API_URL}/api/audits`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(auditData),
+                });
+
+                if (!auditResponse.ok) throw new Error('Error al crear auditoría');
+
+                const newAudit = await auditResponse.json();
+                currentAuditId = newAudit.id;
+                setAuditId(currentAuditId);
+            }
+
+            // Save findings
+            const findingsArray = Object.values(findings).filter(f => f.compliant !== null);
+
+            if (findingsArray.length > 0) {
+                const findingsResponse = await fetch(`${API_URL}/api/findings/bulk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        auditId: currentAuditId,
+                        findings: findingsArray.map(f => ({
+                            checklistItemId: f.checklistItemId,
+                            compliant: f.compliant,
+                            comment: f.comment || '',
+                        })),
+                    }),
+                });
+
+                if (!findingsResponse.ok) throw new Error('Error al guardar hallazgos');
+            }
+
+            setSaveMessage('✓ Borrador guardado exitosamente');
+            setTimeout(() => setSaveMessage(null), 3000);
+        } catch (err) {
+            console.error('Error saving draft:', err);
+            setSaveMessage('✗ Error al guardar');
+            setTimeout(() => setSaveMessage(null), 3000);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // Send to AI analysis function
+    const handleSendToAnalysis = async () => {
+        try {
+            setAnalyzing(true);
+
+            // First, save the draft
+            if (!auditId) {
+                await handleSaveDraft();
+            }
+
+            // Prepare findings for analysis
+            const findingsForAnalysis = Object.entries(findings)
+                .filter(([_, f]) => f.compliant === false)
+                .map(([itemId, f]) => {
+                    // Find the checklist item details
+                    let itemDetails = null;
+                    if (checklist) {
+                        for (const norm of selectedNorms) {
+                            const items = checklist[norm as keyof ChecklistByNorm] || [];
+                            const found = items.find(item => item.id === itemId);
+                            if (found) {
+                                itemDetails = found;
+                                break;
+                            }
+                        }
+                    }
+                    return {
+                        requirement: itemDetails?.requirement || 'Requisito no encontrado',
+                        clause: itemDetails?.clause || '',
+                        norm: itemDetails?.norm || '',
+                        compliant: f.compliant,
+                        comment: f.comment || 'Sin comentario',
+                    };
+                });
+
+            if (findingsForAnalysis.length === 0) {
+                alert('No hay hallazgos no conformes para analizar. Marca algunos items como "No Conforme" primero.');
+                setAnalyzing(false);
+                return;
+            }
+
+            // Call the analysis endpoint
+            const response = await fetch(`${API_URL}/api/analysis/test`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    findings: findingsForAnalysis,
+                    norms: selectedNorms,
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error en análisis');
+            }
+
+            const result = await response.json();
+            setAnalysisResult(result);
+            setShowAnalysisModal(true);
+        } catch (err: any) {
+            console.error('Error in AI analysis:', err);
+            alert(`Error en análisis IA: ${err.message}`);
+        } finally {
+            setAnalyzing(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -171,6 +307,89 @@ export default function AuditPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
+            {/* Analysis Results Modal */}
+            {showAnalysisModal && analysisResult && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-semibold text-gray-900">
+                                    🤖 Análisis IA Completado
+                                </h2>
+                                <button
+                                    onClick={() => setShowAnalysisModal(false)}
+                                    className="p-2 text-gray-400 hover:text-gray-600 rounded-lg"
+                                >
+                                    <XCircle className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {/* Summary */}
+                            <div className="bg-primary-50 rounded-lg p-4">
+                                <h3 className="font-semibold text-primary-900 mb-2">Resumen Ejecutivo</h3>
+                                <p className="text-primary-800">{analysisResult.summary || 'Análisis completado exitosamente.'}</p>
+                            </div>
+
+                            {/* Risk Level */}
+                            {analysisResult.riskLevel && (
+                                <div className={`rounded-lg p-4 ${analysisResult.riskLevel === 'ALTO' ? 'bg-red-50' :
+                                        analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-50' : 'bg-green-50'
+                                    }`}>
+                                    <h3 className="font-semibold mb-2">Nivel de Riesgo</h3>
+                                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${analysisResult.riskLevel === 'ALTO' ? 'bg-red-200 text-red-800' :
+                                            analysisResult.riskLevel === 'MEDIO' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'
+                                        }`}>
+                                        {analysisResult.riskLevel}
+                                    </span>
+                                </div>
+                            )}
+
+                            {/* Recommendations */}
+                            {analysisResult.recommendations && analysisResult.recommendations.length > 0 && (
+                                <div>
+                                    <h3 className="font-semibold text-gray-900 mb-3">Recomendaciones</h3>
+                                    <ul className="space-y-2">
+                                        {analysisResult.recommendations.map((rec: string, idx: number) => (
+                                            <li key={idx} className="flex items-start gap-2 text-gray-700">
+                                                <CheckCircle2 className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                                <span>{rec}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {/* Legal References */}
+                            {analysisResult.legalFindings && analysisResult.legalFindings.length > 0 && (
+                                <div>
+                                    <h3 className="font-semibold text-gray-900 mb-3">Referencias Legales Aplicables</h3>
+                                    <div className="space-y-2">
+                                        {analysisResult.legalFindings.map((ref: any, idx: number) => (
+                                            <div key={idx} className="bg-gray-50 rounded-lg p-3">
+                                                <p className="font-medium text-gray-900">{ref.law || ref.reference}</p>
+                                                <p className="text-sm text-gray-600">{ref.description || ref.article}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-6 border-t border-gray-200 flex justify-end gap-3">
+                            <button
+                                onClick={() => setShowAnalysisModal(false)}
+                                className="btn-secondary"
+                            >
+                                Cerrar
+                            </button>
+                            <Link href="/nonconformities" className="btn-primary">
+                                Ver No Conformidades
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-6 py-4">
@@ -185,13 +404,34 @@ export default function AuditPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <button className="btn-secondary flex items-center gap-2">
-                                <Save className="h-4 w-4" />
-                                Guardar Borrador
+                            {saveMessage && (
+                                <span className={`text-sm ${saveMessage.includes('✓') ? 'text-green-600' : 'text-red-600'}`}>
+                                    {saveMessage}
+                                </span>
+                            )}
+                            <button
+                                onClick={handleSaveDraft}
+                                disabled={saving}
+                                className="btn-secondary flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {saving ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Save className="h-4 w-4" />
+                                )}
+                                {saving ? 'Guardando...' : 'Guardar Borrador'}
                             </button>
-                            <button className="btn-primary flex items-center gap-2">
-                                <Send className="h-4 w-4" />
-                                Enviar a Análisis IA
+                            <button
+                                onClick={handleSendToAnalysis}
+                                disabled={analyzing || getNonCompliantCount() === 0}
+                                className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                            >
+                                {analyzing ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Send className="h-4 w-4" />
+                                )}
+                                {analyzing ? 'Analizando...' : 'Enviar a Análisis IA'}
                             </button>
                         </div>
                     </div>
