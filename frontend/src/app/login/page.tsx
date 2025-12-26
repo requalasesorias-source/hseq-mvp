@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Mail, Lock, ArrowRight, BarChart2, Building2, User } from 'lucide-react';
+import { Mail, Lock, ArrowRight, BarChart2, Building2, User, Shield } from 'lucide-react';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -11,6 +11,15 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [accountType, setAccountType] = useState<'personal' | 'empresa'>('empresa');
+    const [currentSlide, setCurrentSlide] = useState(0);
+
+    // Auto-advance slides
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % 3);
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,7 +34,7 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen bg-[#05050A] text-white flex overflow-hidden">
-            {/* Split Layout: Left Side (Branding) */}
+            {/* Split Layout: Left Side (Branding & Info Carousel) */}
             <div className="hidden lg:flex lg:w-1/2 relative bg-[#0A0A15] items-center justify-center p-12 overflow-hidden">
                 {/* Background Effects */}
                 <div className="absolute top-0 left-0 w-full h-full">
@@ -33,47 +42,115 @@ export default function LoginPage() {
                     <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px]" />
                 </div>
 
-                <div className="relative z-10 max-w-xl">
+                <div className="relative z-10 max-w-xl w-full">
                     {/* Header Logo & Tag */}
-                    <div className="flex items-center gap-3 mb-8">
+                    <div className="flex items-center gap-3 mb-10 absolute top-0 pt-12">
                         <div className="flex gap-1">
                             <div className="w-3 h-8 bg-emerald-500 rounded-full"></div>
-                            <div className="w-3 h-6 bg-blue-500 rounded-full mt-2"></div>
-                            <div className="w-3 h-8 bg-emerald-500 rounded-full"></div>
+                            <div className="w-3 h-8 bg-blue-600 rounded-full"></div>
                         </div>
-                        <h1 className="text-2xl font-bold tracking-tight text-white uppercase">Requal IA Manager</h1>
+                        <h1 className="text-xl font-bold tracking-tight text-white uppercase">Requal IA Manager</h1>
                     </div>
 
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold tracking-wider mb-8">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                        NUEVA VERSIÓN 2.0
+                    {/* Carousel Content */}
+                    <div className="mt-20 h-[400px] flex flex-col justify-center relative">
+                        {/* Slide 1: Intro */}
+                        <div className={`transition-all duration-700 absolute inset-0 ${currentSlide === 0 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold tracking-wider mb-8">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                                NUEVA VERSIÓN 2.0
+                            </div>
+                            <h2 className="text-5xl font-bold leading-tight mb-6">
+                                Tus Aliados en <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
+                                    Transformación Digital HSEQ
+                                </span>
+                            </h2>
+                            <p className="text-lg text-gray-400 leading-relaxed mb-8 max-w-md">
+                                Gestiona riesgos, cumplimiento y operaciones con la potencia de la Inteligencia Artificial. La plataforma definitiva para equipos de alto rendimiento.
+                            </p>
+                            <div className="flex gap-4">
+                                <div className="px-4 py-2 bg-white/5 rounded-lg border border-white/10">
+                                    <p className="text-2xl font-bold text-white">119</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Puntos de Control</p>
+                                </div>
+                                <div className="px-4 py-2 bg-white/5 rounded-lg border border-white/10">
+                                    <p className="text-2xl font-bold text-white">ISO</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-wider">Trinorma Integrada</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Slide 2: Compliance Trinorma */}
+                        <div className={`transition-all duration-700 absolute inset-0 ${currentSlide === 1 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold tracking-wider mb-8">
+                                <Shield className="w-3 h-3" />
+                                ESTÁNDARES INTERNACIONALES
+                            </div>
+                            <h2 className="text-4xl font-bold leading-tight mb-6 text-white">
+                                Auditoría Trinorma <br />
+                                <span className="text-emerald-400">Totalmente Integrada</span>
+                            </h2>
+                            <div className="space-y-4 mb-8">
+                                <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 font-bold">45</div>
+                                    <div>
+                                        <h4 className="text-white font-semibold">ISO 45001:2018</h4>
+                                        <p className="text-xs text-gray-400">Seguridad y Salud (Ley 16.744)</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 font-bold">14</div>
+                                    <div>
+                                        <h4 className="text-white font-semibold">ISO 14001:2015</h4>
+                                        <p className="text-xs text-gray-400">Gestión Ambiental (Ley 19.300)</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-4 bg-white/5 p-3 rounded-xl border border-white/5">
+                                    <div className="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold">90</div>
+                                    <div>
+                                        <h4 className="text-white font-semibold">ISO 9001:2015</h4>
+                                        <p className="text-xs text-gray-400">Calidad y Procesos</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Slide 3: AI Power */}
+                        <div className={`transition-all duration-700 absolute inset-0 ${currentSlide === 2 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10 pointer-events-none'}`}>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold tracking-wider mb-8">
+                                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                                GEMINI AI ENGINE
+                            </div>
+                            <h2 className="text-4xl font-bold leading-tight mb-6 text-white">
+                                Inteligencia Artificial <br />
+                                <span className="text-purple-400">Aplicada a Compliance</span>
+                            </h2>
+                            <p className="text-lg text-gray-400 leading-relaxed mb-8">
+                                Nuestro motor IA analiza hallazgos en tiempo real, sugiere clasificaciones de riesgo y genera planes de acción basados en normativa chilena (DS44, DS594).
+                            </p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                    <h5 className="text-white font-bold mb-1">Clasificación</h5>
+                                    <p className="text-xs text-gray-400">Auto-detecta severidad Crítica/Mayor</p>
+                                </div>
+                                <div className="bg-white/5 p-4 rounded-xl border border-white/5">
+                                    <h5 className="text-white font-bold mb-1">Legal Tech</h5>
+                                    <p className="text-xs text-gray-400">Cita artículos de leyes específicas</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <h2 className="text-5xl font-bold leading-tight mb-6">
-                        Tus Aliados en <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-500">
-                            Transformación Digital HSEQ
-                        </span>
-                    </h2>
-
-                    <p className="text-lg text-gray-400 leading-relaxed mb-10 max-w-md">
-                        Gestiona riesgos, cumplimiento y operaciones con la potencia de la Inteligencia Artificial. La plataforma definitiva para auditorías de alto rendimiento.
-                    </p>
-
-                    {/* Stats or Proof */}
-                    <div className="flex items-center gap-8 border-t border-white/10 pt-8">
-                        <div>
-                            <p className="text-3xl font-bold text-white">119</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Puntos de Control</p>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-bold text-white">3</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Normas ISO Integra.</p>
-                        </div>
-                        <div>
-                            <p className="text-3xl font-bold text-white">AI</p>
-                            <p className="text-xs text-gray-500 uppercase tracking-wider mt-1">Análisis Predictivo</p>
-                        </div>
+                    {/* Carousel Indicators */}
+                    <div className="flex gap-2 mt-12">
+                        {[0, 1, 2].map((idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => setCurrentSlide(idx)}
+                                className={`h-1.5 rounded-full transition-all duration-300 ${currentSlide === idx ? 'w-8 bg-blue-500' : 'w-2 bg-white/20 hover:bg-white/40'}`}
+                            />
+                        ))}
                     </div>
                 </div>
             </div>
