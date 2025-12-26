@@ -16,6 +16,7 @@ import { findingRoutes } from './modules/findings/findings.routes.js';
 import { ncRoutes } from './modules/nonconformities/nc.routes.js';
 import { analysisRoutes } from './modules/analysis/analysis.routes.js';
 import { checklistRoutes } from './modules/checklist/checklist.routes.js';
+import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
@@ -58,6 +59,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/audits', auditRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/findings', findingRoutes);
 app.use('/api/nonconformities', ncRoutes);
 app.use('/api/analysis', analysisRoutes);
