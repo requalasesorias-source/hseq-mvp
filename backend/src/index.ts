@@ -67,9 +67,18 @@ app.use('/api/checklist', checklistRoutes);
 app.post('/api/admin/seed', async (_req: Request, res: Response) => {
     try {
         const { PrismaClient } = await import('@prisma/client');
-        const prisma = new PrismaClient();
 
-        console.log('🌱 Running database seed with inline SQL...');
+        // Add pgbouncer=true to disable prepared statements (Render free tier uses pgBouncer)
+        const dbUrl = process.env.DATABASE_URL || '';
+        const urlWithPgBouncer = dbUrl.includes('?')
+            ? `${dbUrl}&pgbouncer=true&connection_limit=1`
+            : `${dbUrl}?pgbouncer=true&connection_limit=1`;
+
+        const prisma = new PrismaClient({
+            datasources: { db: { url: urlWithPgBouncer } },
+        });
+
+        console.log('🌱 Running database seed with pgbouncer mode...');
 
         // DS44 + ISO Checklist Items - Use $queryRawUnsafe with fully inline SQL to avoid pgBouncer prepared statement issues
         const items = [
