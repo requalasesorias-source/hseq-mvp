@@ -36,10 +36,17 @@ export default function DashboardPage() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string>('Usuario');
 
     useEffect(() => {
         async function fetchDashboard() {
             try {
+                // Get user name from cookie
+                const match = document.cookie.match(new RegExp('(^| )user_name=([^;]+)'));
+                if (match) {
+                    setUserName(decodeURIComponent(match[2]));
+                }
+
                 const res = await fetch(`${API_URL}/api/dashboard/stats`);
                 if (!res.ok) throw new Error('Failed to load dashboard stats');
                 const json = await res.json();
@@ -153,7 +160,7 @@ export default function DashboardPage() {
                             <User className="h-5 w-5 text-primary-700" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">Juan Pérez</p>
+                            <p className="text-sm font-medium text-gray-900 truncate">{userName}</p>
                             <p className="text-xs text-gray-500 truncate">Auditor Senior</p>
                         </div>
                         <button
@@ -175,7 +182,7 @@ export default function DashboardPage() {
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
                     <div className="flex items-center justify-between h-16 px-6">
                         <div>
-                            <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
+                            <h1 className="text-xl font-semibold text-gray-900">Hola, {userName}</h1>
                             <p className="text-sm text-gray-500">Resumen de cumplimiento en tiempo real</p>
                         </div>
                         <div className="flex items-center gap-4">

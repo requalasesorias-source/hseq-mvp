@@ -29,6 +29,10 @@ export default function LoginPage() {
         setTimeout(() => {
             // Set mock auth cookie
             document.cookie = "auth_token=mock_token_secure_enterprise; path=/; max-age=86400; SameSite=Strict";
+            // Set mock user cookie (get name from email or default)
+            const userName = email ? email.split('@')[0] : 'Admin Usuario';
+            document.cookie = `user_name=${userName}; path=/; max-age=86400; SameSite=Strict`;
+
             router.push('/dashboard');
         }, 800);
     };
