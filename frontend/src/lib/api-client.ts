@@ -292,6 +292,11 @@ export const checklistApi = {
         const response = await apiClient.post<{ message: string; items: number }>('/checklist/seed');
         return response.data;
     },
+
+    getDemoConfig: async () => {
+        const response = await apiClient.get<{ companyId: string; auditorId: string }>('/checklist/demo-config');
+        return response.data;
+    },
 };
 
 export default apiClient;

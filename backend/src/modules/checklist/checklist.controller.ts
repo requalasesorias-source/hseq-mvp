@@ -106,10 +106,33 @@ export async function createChecklistItem(req: Request, res: Response) {
 
 /**
  * POST /api/checklist/seed
- * Seed initial checklist items (for demo/development)
+ * Seed initial checklist items + Demo Company + Demo User
  */
 export async function seedChecklistItems(_req: Request, res: Response) {
     try {
+        // 1. Create Demo Company
+        const company = await prisma.company.upsert({
+            where: { rut: '99.999.999-9' },
+            update: {},
+            create: {
+                name: 'Requal Demo Corp',
+                rut: '99.999.999-9',
+                industry: 'Minería',
+            }
+        });
+
+        // 2. Create Demo Auditor
+        const auditor = await prisma.user.upsert({
+            where: { email: 'demo@requal.cl' },
+            update: {},
+            create: {
+                email: 'demo@requal.cl',
+                name: 'Auditor Demo',
+                role: 'AUDITOR',
+                companyId: company.id
+            }
+        });
+
         const seedData = [
             // ISO 45001 - Seguridad y Salud en el Trabajo
             {
@@ -214,11 +237,37 @@ export async function seedChecklistItems(_req: Request, res: Response) {
         }
 
         res.json({
-            message: `Seeded ${seedData.length} checklist items`,
+            message: `Seeded Config & ${seedData.length} items`,
             items: seedData.length,
+            demoConfig: {
+                companyId: company.id,
+                auditorId: auditor.id
+            }
         });
     } catch (error) {
         console.error('[CHECKLIST] Seed error:', error);
         res.status(500).json({ error: 'Failed to seed checklist items' });
+    }
+}
+
+/**
+ * GET /api/checklist/demo-config
+ * Get IDs for demo usage (public)
+ */
+export async function getDemoConfig(req: Request, res: Response) {
+    try {
+        const company = await prisma.company.findFirst({ where: { rut: '99.999.999-9' } });
+        const auditor = await prisma.user.findFirst({ where: { email: 'demo@requal.cl' } });
+
+        if (!company || !auditor) {
+            return res.status(404).json({ error: 'Demo data not seeded. Run POST /api/checklist/seed first.' });
+        }
+
+        res.json({
+            companyId: company.id,
+            auditorId: auditor.id
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to get demo config' });
     }
 }
