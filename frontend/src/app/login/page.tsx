@@ -184,9 +184,7 @@ export default function LoginPage() {
                         </button>
                     </div>
 
-                    import {signIn} from 'next-auth/react';
 
-                    // ... (dentro del componente LoginPage)
 
                     {/* Social Login */}
                     <div className="space-y-3">
