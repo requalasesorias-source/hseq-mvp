@@ -37,6 +37,16 @@ export default function LoginPage() {
         }, 800);
     };
 
+    const handleMockSocialLogin = (provider: string) => {
+        setIsLoading(true);
+        setTimeout(() => {
+            document.cookie = "auth_token=mock_token_secure_social; path=/; max-age=86400; SameSite=Strict";
+            const userName = provider === 'google' ? 'Usuario Google' : 'Usuario Microsoft';
+            document.cookie = `user_name=${userName}; path=/; max-age=86400; SameSite=Strict`;
+            router.push('/dashboard');
+        }, 1500);
+    };
+
     return (
         <div className="min-h-screen bg-[#05050A] text-white flex overflow-hidden">
             {/* Split Layout: Left Side (Branding & Info Carousel) */}
@@ -189,11 +199,10 @@ export default function LoginPage() {
                     </div>
 
 
-
                     {/* Social Login */}
                     <div className="space-y-3">
                         <button
-                            onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                            onClick={() => handleMockSocialLogin('google')}
                             className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm"
                         >
                             {/* Google Icon */}
@@ -206,7 +215,7 @@ export default function LoginPage() {
                             Google Workspace
                         </button>
                         <button
-                            onClick={() => signIn('azure-ad', { callbackUrl: '/dashboard' })}
+                            onClick={() => handleMockSocialLogin('microsoft')}
                             className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm"
                         >
                             {/* Microsoft Icon (Simplified) */}
