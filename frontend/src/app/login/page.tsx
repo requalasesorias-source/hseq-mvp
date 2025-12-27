@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Mail, Lock, ArrowRight, BarChart2, Building2, User, Shield } from 'lucide-react';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -183,9 +184,16 @@ export default function LoginPage() {
                         </button>
                     </div>
 
+                    import {signIn} from 'next-auth/react';
+
+                    // ... (dentro del componente LoginPage)
+
                     {/* Social Login */}
                     <div className="space-y-3">
-                        <button className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm">
+                        <button
+                            onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                            className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm"
+                        >
                             {/* Google Icon */}
                             <svg className="w-5 h-5" viewBox="0 0 24 24">
                                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -195,7 +203,10 @@ export default function LoginPage() {
                             </svg>
                             Google Workspace
                         </button>
-                        <button className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm">
+                        <button
+                            onClick={() => signIn('azure-ad', { callbackUrl: '/dashboard' })}
+                            className="w-full bg-white hover:bg-slate-50 text-slate-700 font-medium py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors border border-slate-300 shadow-sm"
+                        >
                             {/* Microsoft Icon (Simplified) */}
                             <div className="grid grid-cols-2 gap-0.5 w-4 h-4">
                                 <div className="bg-[#F35325]"></div>
